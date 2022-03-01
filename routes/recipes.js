@@ -21,18 +21,16 @@ router.get("/details/:recipeName", (req, res) => {
         const requiredRecipe = JSON.parse(data).recipes.filter((recipe) => {
             return recipe.name === req.params.recipeName;
         });
-        // const response = {
-        //     "details": {
-        //         "ingredients": requiredRecipe[0].ingredients
-        //     },
-        //     "numSteps": requiredRecipe[0].instructions.length
-        // };
-        res.status(200).json({
-            "details": {
-                "ingredients": requiredRecipe[0].ingredients
-            },
-            "numSteps": requiredRecipe[0].instructions.length
-        });
+        if(requiredRecipe.length == 0){
+            res.status(200).json({});
+        } else{
+            res.status(200).json({
+                "details": {
+                    "ingredients": requiredRecipe[0].ingredients
+                },
+                "numSteps": requiredRecipe[0].instructions.length
+            });
+        }
     });
 });
 
