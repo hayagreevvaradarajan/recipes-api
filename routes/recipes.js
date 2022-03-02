@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
         });
         res.status(200).json({
             "recipeNames": recipeNames
-        });
+        }, null, 3);
     });
 });
 
@@ -29,6 +29,33 @@ router.get("/details/:recipeName", (req, res) => {
                     "ingredients": requiredRecipe[0].ingredients
                 },
                 "numSteps": requiredRecipe[0].instructions.length
+            });
+        }
+    });
+});
+
+router.post("/", (req, res) => {
+    const name = req.body.name;
+    const ingredients = req.body.ingredients;
+    const instructions = req.body.instructions;
+    const newRecipe = {
+        "name": name,
+        "ingredients": ingredients,
+        "instructions": instructions
+    };
+    fs.readFile(dataPath, (err, data) => {
+        const requiredRecipe = JSON.parse(data).recipes.filter((recipe) => {
+            return recipe.name === name;
+        });
+        if(requiredRecipe.length === 0){
+            const oldData = JSON.parse(data);
+            oldData.recipes.push(newRecipe);
+            const newData = JSON.stringify(oldData);
+            // fs.writeFileSync(dataPath, newData, "utf8");
+            res.status(201).json(null);
+        }else if(requiredRecipe.length != 0){
+            res.status(400).json({
+                "error": "Recipe already exists"
             });
         }
     });
