@@ -100,4 +100,34 @@ router.put("/", (req, res) => {
     });
 });
 
+router.delete("/:recipeName", (req, res) => {
+    const name = req.params.recipeName;
+    fs.readFile(dataPath, (err, data) => {
+        const jsonData = JSON.parse(data);
+        const requiredRecipe = jsonData.recipes.filter((recipe) => {
+            return recipe.name === name;
+        });
+        if(requiredRecipe.length === 0){
+            res.status(404).json({
+                "error": "Recipe does not exist"
+            });
+        } else{
+            const recipeIndex = jsonData.recipes.findIndex((recipe) => {
+                return recipe.name === name
+            });
+            if(recipeIndex > -1){
+                jsonData.recipes.splice(recipeIndex, 1);
+                const newData = JSON.stringify(jsonData);
+                fs.writeFile(dataPath, newData, "utf8",(err) => {
+                    if(!err){
+                        res.status(200).json({
+                            "message": "Recipe deleted successfully"
+                        });
+                    }
+                });
+            }
+        }
+    });
+});
+
 module.exports = router;
