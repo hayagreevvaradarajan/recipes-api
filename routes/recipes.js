@@ -51,9 +51,12 @@ router.post("/", (req, res) => {
             const oldData = JSON.parse(data);
             oldData.recipes.push(newRecipe);
             const newData = JSON.stringify(oldData);
-            // fs.writeFileSync(dataPath, newData, "utf8");
-            res.status(201).json(null);
-        }else if(requiredRecipe.length != 0){
+            fs.writeFile(dataPath, newData, "utf8",(err) => {
+                if(!err){
+                    res.status(201).json(null);
+                }
+            });
+        } else if(requiredRecipe.length != 0){
             res.status(400).json({
                 "error": "Recipe already exists"
             });
