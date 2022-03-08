@@ -64,5 +64,40 @@ router.post("/", (req, res) => {
     });
 });
 
+router.put("/", (req, res) => {
+    const name = req.body.name;
+    const ingredients = req.body.ingredients;
+    const instructions = req.body.ingredients;
+    const recipeToBeUpdated = {
+        "name": name,
+        "ingredients": ingredients,
+        "instructions": instructions
+    };
+    fs.readFile(dataPath, (err, data) => {
+        const jsonData = JSON.parse(data);
+        const requiredRecipe = jsonData.recipes.filter((recipe) => {
+            return recipe.name === name;
+        });
+        if(requiredRecipe.length === 0){
+            res.status(404).json({
+                "error": "Recipe does not exist"
+            });
+        } else{
+            const recipeIndex = jsonData.recipes.findIndex((recipe) => {
+                return recipe.name === name
+            });
+            if(recipeIndex > -1){
+                jsonData.recipes.splice(recipeIndex, 1);
+                jsonData.recipes.push(recipeToBeUpdated);
+                const newData = JSON.stringify(jsonData);
+                fs.writeFile(dataPath, newData, "utf8",(err) => {
+                    if(!err){
+                        res.status(201).json(null);
+                    }
+                });
+            }
+        }
+    });
+});
 
 module.exports = router;
