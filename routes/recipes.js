@@ -24,12 +24,22 @@ router.get("/details/:recipeName", (req, res) => {
         if(requiredRecipe.length == 0){
             res.status(200).json({});
         } else{
-            res.status(200).json({
-                "details": {
-                    "ingredients": requiredRecipe[0].ingredients
-                },
-                "numSteps": requiredRecipe[0].instructions.length
-            });
+            if(requiredRecipe[0].hasOwnProperty("instructions")){
+                res.status(200).json({
+                    "details": {
+                        "ingredients": requiredRecipe[0].ingredients
+                    },
+                    "numSteps": requiredRecipe[0].instructions.length
+                });
+            } else{
+                res.status(200).json({
+                    "details": {
+                        "ingredients": requiredRecipe[0].ingredients
+                    },
+                    "numSteps": "No steps found"
+                });
+            }
+
         }
     });
 });
@@ -67,7 +77,7 @@ router.post("/", (req, res) => {
 router.put("/", (req, res) => {
     const name = req.body.name;
     const ingredients = req.body.ingredients;
-    const instructions = req.body.ingredients;
+    const instructions = req.body.instructions;
     const recipeToBeUpdated = {
         "name": name,
         "ingredients": ingredients,
